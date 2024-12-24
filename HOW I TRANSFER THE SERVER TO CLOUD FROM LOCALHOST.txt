@@ -1,0 +1,24 @@
+Here are the successful commands without errors:
+
+1. `pg_dump -U Sivasaran -h localhost -d Sivasaran -F c -b -v -f sivasaran_backup.dump`
+2. `set PGPASSWORD=OuzQN7rIYBs2P8AJdn3JKvoUKymbvdd0 psql -h dpg-ctlgr2qj1k6c73d0ts9g-a.oregon-postgres.render.com -U sivasaran sivasaran`
+3. `ping dpg-ctlgr2qj1k6c73d0ts9g-a.oregon-postgres.render.com`
+4. `psql "sslmode=require host=dpg-ctlgr2qj1k6c73d0ts9g-a.oregon-postgres.render.com dbname=sivasaran user=sivasaran password=OuzQN7rIYBs2P8AJdn3JKvoUKymbvdd0"`
+5. `set PGSSLMODE=require`
+6. `set PGPASSWORD=OuzQN7rIYBs2P8AJdn3JKvoUKymbvdd0`
+7. `pg_restore -U sivasaran -h dpg-ctlgr2qj1k6c73d0ts9g-a.oregon-postgres.render.com -d sivasaran -v "C:\laragon\www\sivasaran_backup.dump"`
+
+_____________________________________________________________
+https://leave-permission-project-server-1.onrender.com/leave
+# IS ON LIVE !!!
+
+
+############FROM RENDER, WHERE:
+HOST:dpg-ctlgr2qj1k6c73d0ts9g-a
+PORT:5432
+DATABASE:5432
+USERNAME:5432
+PASSOWRD:OuzQN7rIYBs2P8AJdn3JKvoUKymbvdd0
+INTERNAL DB URL:postgresql://sivasaran:OuzQN7rIYBs2P8AJdn3JKvoUKymbvdd0@dpg-ctlgr2qj1k6c73d0ts9g-a/sivasaran
+EXTERNAL DB URL:postgresql://sivasaran:OuzQN7rIYBs2P8AJdn3JKvoUKymbvdd0@dpg-ctlgr2qj1k6c73d0ts9g-a.oregon-postgres.render.com/sivasaran
+PSQL CMD:PGPASSWORD=OuzQN7rIYBs2P8AJdn3JKvoUKymbvdd0 psql -h dpg-ctlgr2qj1k6c73d0ts9g-a.oregon-postgres.render.com -U sivasaran sivasaran
