@@ -1,0 +1,23 @@
+name: Deploy to Hosting Server
+
+on:
+  push:
+    branches:
+      - main  # Replace with your branch name
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Upload via FTP
+        uses: SamKirkland/FTP-Deploy-Action@4.3.0
+        with:
+          server: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./  # Local directory to upload
+          server-dir: /public_html/  # Replace with your server path
