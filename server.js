@@ -2,10 +2,6 @@ const express = require('express');
 const cors = require('cors');
 const fs = require('fs');
 const path = require('path');
-const permissionRoutes = require('./routes/permission');
-const leavebalanceRoutes = require('./routes/leave_balance'); // Updated import
-
-
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -25,10 +21,8 @@ app.use('/login', require('./routes/login'));
 app.use('/attandance', require('./routes/attandance'));
 app.use('/add_user', require('./routes/adduser'));
 app.use('/leave', require('./routes/leaveData'));
-app.use('/', leavebalanceRoutes); // Updated route path
-
-app.use('/permission', permissionRoutes);
-app.use('/holidays', require('./routes/holidays'));
+app.use('/', require('./routes/leave_balance')); // Updated route path
+app.use('/permission', require('./routes/permission'));
 
 // Start the server
 const PORT = process.env.PORT || 5000;

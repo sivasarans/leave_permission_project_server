@@ -2,7 +2,33 @@ const express = require('express');
 const { img } = require('vamtec');
 const pool = require('../config/db'); // Importing database connection pool
 const router = express.Router();
+const nodemailer = require('nodemailer');
 
+
+
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: 'xvamtec@gmail.com',
+    pass: 'asnw flum kvgf kvhu' // Use an app-specific password or environment variable for better security
+  }
+});
+
+const getUserEmail = async (user_id) => {
+  try {
+    const result = await pool.query(
+      `SELECT email FROM Users WHERE user_id = $1`,
+      [user_id]
+    );
+    if (result.rows.length > 0) {
+      return result.rows[0].email;
+    }
+    return null;
+  } catch (err) {
+    console.error('Error fetching user email:', err);
+    throw err;
+  }
+};
 // Get all leave data
 router.get('/', async (req, res) => {
   try {
@@ -32,34 +58,38 @@ router.get('/', async (req, res) => {
         }
     });
 
-  // router.post('/apply_leave',
+
+  // router.post(
+  //   '/apply_leave',
   //   img(['uploads/users_leave_documents', 'timestamp', 'file']),
-  //    async (req, res) => {
-  //   const { user_id, user_name, leave_type, from_date, to_date, leave_days, reason } = req.body;
+  //   async (req, res) => {
+  //     const { user_id, user_name, leave_type, from_date, to_date, leave_days, reason } = req.body;
   
-  //   // Ensure all necessary fields are provided
-  //   if (!user_id || !user_name || !leave_type || !from_date || !to_date || !leave_days || !reason) {
-  //     return res.status(400).send('All fields are required');
-  //   }
-  //   if (!req.file) {
-  //     return res.status(400).send('test error: File Uploads error');
-  //   }
+  //     // Ensure all necessary fields are provided
+  //     if (!user_id || !user_name || !leave_type || !from_date || !to_date || !leave_days || !reason) {
+  //       return res.status(400).send('All fields are required');
+  //     }
   
-  //   try {
-  //     // Insert leave application data into the database
-  //     const result = await pool.query(
-  //       `INSERT INTO leave_applications (user_id, user_name, leave_type, from_date, to_date, leave_days, reason, file, status)
-  //        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, 'Pending') RETURNING *`,
-  //       [user_id, user_name, leave_type, from_date, to_date, leave_days, `/uploads/users_leave_documents/${req.file.filename}`, reason]
-  //     );
+  //     try {
+  //       // Determine file path if file exists
+  //       const filePath = req.file ? `/uploads/users_leave_documents/${req.file.filename}` : null;
   
-  //     // Return the inserted leave application
-  //     res.status(201).json({ message: 'Leave application submitted successfully', data: result.rows[0] });
-  //   } catch (err) {
-  //     console.error(err);
-  //     res.status(500).send('Error applying for leave');
+  //       // Insert leave application data into the database
+  //       const result = await pool.query(
+  //         `INSERT INTO leave_applications (user_id, user_name, leave_type, from_date, to_date, leave_days, reason, file, status)
+  //          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, 'Pending') RETURNING *`,
+  //         [user_id, user_name, leave_type, from_date, to_date, leave_days, reason, filePath]
+  //       );
+  
+  //       // Return the inserted leave application
+  //       res.status(201).json({ message: 'Leave application submitted successfully', data: result.rows[0] });
+  //     } catch (err) {
+  //       console.error(err);
+  //       res.status(500).send('Error applying for leave');
+  //     }
   //   }
-  // });
+  // );
+  
 
   router.post(
     '/apply_leave',
@@ -69,25 +99,48 @@ router.get('/', async (req, res) => {
   
       // Ensure all necessary fields are provided
       if (!user_id || !user_name || !leave_type || !from_date || !to_date || !leave_days || !reason) {
-        return res.status(400).send('All fields are required');
-      }
+        res.status(400).send('All fields are required');
+      } else {
+        try {
+          // Get user email
+          const userEmail = await getUserEmail(user_id);
   
-      try {
-        // Determine file path if file exists
-        const filePath = req.file ? `/uploads/users_leave_documents/${req.file.filename}` : null;
+          if (!userEmail) {
+            res.status(404).send('User email not found');
+          } else {
+            // Determine file path if file exists
+            const filePath = req.file ? `/uploads/users_leave_documents/${req.file.filename}` : null;
   
-        // Insert leave application data into the database
-        const result = await pool.query(
-          `INSERT INTO leave_applications (user_id, user_name, leave_type, from_date, to_date, leave_days, reason, file, status)
-           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, 'Pending') RETURNING *`,
-          [user_id, user_name, leave_type, from_date, to_date, leave_days, reason, filePath]
-        );
+            // Insert leave application data into the database
+            const result = await pool.query(
+              `INSERT INTO leave_applications (user_id, user_name, leave_type, from_date, to_date, leave_days, reason, file, status)
+               VALUES ($1, $2, $3, $4, $5, $6, $7, $8, 'Pending') RETURNING *`,
+              [user_id, user_name, leave_type, from_date, to_date, leave_days, reason, filePath]
+            );
   
-        // Return the inserted leave application
-        res.status(201).json({ message: 'Leave application submitted successfully', data: result.rows[0] });
-      } catch (err) {
-        console.error(err);
-        res.status(500).send('Error applying for leave');
+            // Send email notification
+            const mailOptions = {
+              from: 'xvamtec@gmail.com',
+              to: userEmail, // Send to user's email
+              subject: 'Leave Application Submitted',
+              text: `Dear ${user_name},\n\nYour leave application has been submitted successfully and is under review.\n\nDetails:\nLeave Type: ${leave_type}\nFrom: ${from_date}\nTo: ${to_date}\nReason: ${reason}\n\nThank you.`
+            };
+  
+            transporter.sendMail(mailOptions, function (error, info) {
+              if (error) {
+                console.error('Error sending email:', error);
+              } else {
+                console.log('Email sent: ' + info.response);
+              }
+            });
+  
+            // Respond with the inserted leave application
+            res.status(201).json({ message: 'Leave application submitted successfully', data: result.rows[0] });
+          }
+        } catch (err) {
+          console.error(err);
+          res.status(500).send('Error applying for leave');
+        }
       }
     }
   );
