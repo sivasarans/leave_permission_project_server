@@ -13,11 +13,12 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      - name: Upload via FTP
-        uses: SamKirkland/FTP-Deploy-Action@4.3.0
+      - name: Upload via SFTP
+        uses: appleboy/ssh-action@v0.1.6
         with:
-          server: ${{ secrets.FTP_HOST }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          local-dir: ./  # Local directory to upload
-          server-dir: /public_html/  # Replace with your server path
+          host: ${{ secrets.SFTP_HOST }}  # Replace with your SFTP server
+          username: ${{ secrets.SFTP_USERNAME }}  # Replace with your SFTP username
+          password: ${{ secrets.SFTP_PASSWORD }}  # Replace with your SFTP password
+          port: 22  # SFTP default port
+          source: "./"  # Local directory to upload
+          target: "/public_html/"  # Replace with your server directory
