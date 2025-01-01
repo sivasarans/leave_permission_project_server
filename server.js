@@ -6,7 +6,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Ensure 'uploads' and subfolders exist
+// Ensure 'uploads' and subfolders exist - OK
 const uploadFolders = ['uploads', 'uploads/users_profile', 'uploads/users_leave_attachments'];
 uploadFolders.forEach(folder => {
   fs.mkdirSync(path.join(__dirname, folder), { recursive: true });
