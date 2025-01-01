@@ -5,7 +5,7 @@ const path = require('path');
 const app = express();
 app.use(cors());
 app.use(express.json());
-
+//yes
 // Ensure 'uploads' and subfolders exist
 const uploadFolders = ['uploads', 'uploads/users_profile', 'uploads/users_leave_attachments'];
 uploadFolders.forEach(folder => {
@@ -26,4 +26,4 @@ app.use('/permission', require('./routes/permission'));
 
 // Start the server
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running at http://localhost:${PORT}`));
+app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
